@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache-deployment
+  labels:
+    app: cache
+spec:
+  selector:
+    matchLabels:
+      app: cache
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: cache
+    spec:
+      containers:
+      - name: cache
+        image: praqma/network-multitool
+        ports:
+        - containerPort: 1180
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "80m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cache
+spec:
+  selector:
+    app: cache
+  ports:
+    - protocol: TCP
+      port: 1180
+      targetPort: 1180
+      nodePort: 30083
+  type: NodePort
